@@ -1,9 +1,9 @@
-function [ t,f ] = explicit_euler(df,f0,tau,T_end)
+function [ t,y ] = explicit_euler(f,y0,tau,T_end)
 % numerical solution of ODE using explicit euler scheme
 t=0:tau:T_end;
-f=zeros(size(t));
-f(1)=f0;
-for n = 1:(numel(f)-1)    
-    f(n+1)=f(n)+tau*df(t(n),f(n));    
+y=zeros(size(t));
+y(1)=y0;
+for n = 1:(numel(y)-1)    
+    y(n+1)=y(n)+tau*f(t(n),y(n));    
 end
 end

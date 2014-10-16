@@ -1,16 +1,16 @@
-function [ t,f ] = heun(df,f0,tau,T_end)
+function [ t,y ] = heun(f,y0,tau,T_end)
 % numerical solution of ODE using heun scheme
 
 t=0:tau:T_end;
 
-f=zeros(size(t));
+y=zeros(size(t));
 
-f(1)=f0;
+y(1)=y0;
 
-for n = 1:(numel(f)-1)
+for n = 1:(numel(y)-1)
     
-    f_mid=f(n)+tau*df(t(n),f(n));    
-    f(n+1)=.5*(f(n)+f_mid+tau*df(t(n+1),f_mid));
+    y_mid=y(n)+tau*f(t(n),y(n));    
+    y(n+1)=.5*(y(n)+y_mid+tau*f(t(n+1),y_mid));
     
 end
 

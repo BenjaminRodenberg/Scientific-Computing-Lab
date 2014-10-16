@@ -4,8 +4,8 @@ T_end=10;
 curr_tau=T_end/100;
 t=0:curr_tau:T_end;
 
-tau_num=T_end*1./2.^(10:-1:0);
-%tau_num=[1/8,1/4,1/2,1];
+tau_num=T_end*1./2.^(0:1:10);
+%tau_num=[1,1/2,1/4,1/8];
 n_sim=numel(tau_num);
 
 E=struct();
@@ -55,7 +55,6 @@ E.compareAna.euler(sim)=curr_Errors_ana(1);
 E.compareAna.heun(sim)=curr_Errors_ana(2);
 E.compareAna.rungekutta(sim)=curr_Errors_ana(3);
 
-%%%%%not correctly implemented!!!! BEGIN
 best_scheme=(curr_Errors_ana==min(curr_Errors_ana));
 
 y_best=y_num(best_scheme,:);
@@ -63,7 +62,6 @@ E.compareNum.tau(sim)=curr_tau;
 E.compareNum.euler(sim)=Error_norm(y_ee,y_best,curr_tau,T_end);
 E.compareNum.heun(sim)=Error_norm(y_h,y_best,curr_tau,T_end);
 E.compareNum.rungekutta(sim)=Error_norm(y_rk,y_best,curr_tau,T_end);
-%%%%%not correctly implemented!!!! END
 
 end
 
