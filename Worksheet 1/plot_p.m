@@ -1,15 +1,14 @@
 close all;
-T_end=10;
-%T_end=5;
+%T_end=10;
+T_end=5;
 curr_tau=T_end/100;
 t=0:curr_tau:T_end;
 
-tau_num=T_end*1./2.^(10:-1:0);
-%tau_num=[1/8,1/4,1/2,1];
+%tau_num=T_end*1./2.^(10:-1:0);
+tau_num=[1/8,1/4,1/2,1];
 n_sim=numel(tau_num);
 
 E=struct();
-
 E.compareAna.tau=zeros(n_sim,1);
 E.compareAna.euler=zeros(n_sim,1);
 E.compareAna.heun=zeros(n_sim,1);
@@ -20,51 +19,90 @@ E.compareNum.heun=zeros(n_sim,1);
 E.compareNum.rungekutta=zeros(n_sim,1);
 
 for sim=1:n_sim
+    
+    curr_tau=tau_num(sim);
+    
+    y0=1;
+    
+    n_schemes=3;
+    
+    t=0:curr_tau:T_end;
+    
+    [t_ee,y_ee]=explicit_euler(@dp,y0,curr_tau,T_end);
+    [t_h,y_h]=heun(@dp,y0,curr_tau,T_end);
+    [t_rk,y_rk]=runge_kutta_4(@dp,y0,curr_tau,T_end);
+    
+    %[t_ode45,y_ode45]=ode45(@dp,[0 T_end],y0);
+    
+    y_num=zeros(n_schemes,size(t,2));
+    y_num(1,:)=y_ee;
+    y_num(2,:)=y_h;
+    y_num(3,:)=y_rk;
+    
+    t_num=zeros(n_schemes,size(t,2));
+    t_num(1,:)=t_ee;
+    t_num(2,:)=t_h;
+    t_num(3,:)=t_rk;
+    
+    curr_Errors_ana=zeros(n_schemes,1);
+    for i = 1:n_schemes
+        curr_Errors_ana(i)=Error_norm(y_num(i,:),p(t_num(i,:)),curr_tau,T_end);
+    end
+    
+    E.compareAna.tau(sim)=curr_tau;
+    E.compareAna.euler(sim)=curr_Errors_ana(1);
+    E.compareAna.heun(sim)=curr_Errors_ana(2);
+    E.compareAna.rungekutta(sim)=curr_Errors_ana(3);
 
-curr_tau=tau_num(sim);
-
-y0=1;
-
-n_schemes=3;
-
-t=0:curr_tau:T_end;
-
-[t_ee,y_ee]=explicit_euler(@dp,y0,curr_tau,T_end);
-[t_h,y_h]=heun(@dp,y0,curr_tau,T_end);
-[t_rk,y_rk]=runge_kutta_4(@dp,y0,curr_tau,T_end);
-
-%[t_ode45,y_ode45]=ode45(@dp,[0 T_end],y0);
-
-y_num=zeros(n_schemes,size(t,2));
-y_num(1,:)=y_ee;
-y_num(2,:)=y_h;
-y_num(3,:)=y_rk;
-
-t_num=zeros(n_schemes,size(t,2));
-t_num(1,:)=t_ee;
-t_num(2,:)=t_h;
-t_num(3,:)=t_rk;
-
-curr_Errors_ana=zeros(n_schemes,1);
-for i = 1:n_schemes
-curr_Errors_ana(i)=Error_norm(y_num(i,:),p(t_num(i,:)),curr_tau,T_end);
+    fieldname=['tau',mat2str(sim)];
+    sol.euler.(fieldname).y=y_num(1,:);
+    sol.euler.(fieldname).t=t_num(1,:);
+    sol.heun.(fieldname).y=y_num(2,:);
+    sol.heun.(fieldname).t=t_num(2,:);
+    sol.rungekutta.(fieldname).y=y_num(3,:);
+    sol.rungekutta.(fieldname).t=t_num(3,:);
+        
 end
 
-E.compareAna.tau(sim)=curr_tau;
-E.compareAna.euler(sim)=curr_Errors_ana(1);
-E.compareAna.heun(sim)=curr_Errors_ana(2);
-E.compareAna.rungekutta(sim)=curr_Errors_ana(3);
+y_best=zeros(n_schemes,floor(T_end/min(tau_num))+1);
 
-%%%%%not correctly implemented!!!! BEGIN
-best_scheme=(curr_Errors_ana==min(curr_Errors_ana));
+best_sim=find(min(tau_num)==tau_num);
+fieldname=['tau',num2str(best_sim)];    
+y_best(1,:)=sol.euler.(fieldname).y;
+t_best(1,:)=sol.euler.(fieldname).t;
+y_best(2,:)=sol.heun.(fieldname).y;
+t_best(2,:)=sol.heun.(fieldname).t;
+y_best(3,:)=sol.rungekutta.(fieldname).y;
+t_best(3,:)=sol.rungekutta.(fieldname).t;
 
-y_best=y_num(best_scheme,:);
-E.compareNum.tau(sim)=curr_tau;
-E.compareNum.euler(sim)=Error_norm(y_ee,y_best,curr_tau,T_end);
-E.compareNum.heun(sim)=Error_norm(y_h,y_best,curr_tau,T_end);
-E.compareNum.rungekutta(sim)=Error_norm(y_rk,y_best,curr_tau,T_end);
-%%%%%not correctly implemented!!!! END
+for sim = 1:n_sim  
+     
+    curr_tau=tau_num(sim);
 
+    fieldname=['tau',num2str(sim)];    
+
+    y_ee=sol.euler.(fieldname).y;
+    t_ee=sol.euler.(fieldname).t;
+    y_he=sol.heun.(fieldname).y;
+    t_he=sol.heun.(fieldname).t;
+    y_rk=sol.rungekutta.(fieldname).y;
+    t_rk=sol.rungekutta.(fieldname).t;
+    
+    t_best_ee=t_best(1,:);
+    y_best_ee=y_best(1,:);
+    y_best_ee=y_best_ee(arrayfun(@(x) find(t_best_ee == x,1,'first'), t_ee ));
+    t_best_he=t_best(2,:);
+    y_best_he=y_best(2,:);
+    y_best_he=y_best_he(arrayfun(@(x) find(t_best_he == x,1,'first'), t_he ));
+    t_best_rk=t_best(3,:);
+    y_best_rk=y_best(3,:);
+    y_best_rk=y_best_rk(arrayfun(@(x) find(t_best_rk == x,1,'first'), t_rk ));
+
+    E.compareNum.tau(sim)       =curr_tau;
+    E.compareNum.euler(sim)     =Error_norm(y_ee,y_best_ee,curr_tau,T_end);
+    E.compareNum.heun(sim)      =Error_norm(y_he,y_best_he,curr_tau,T_end);
+    E.compareNum.rungekutta(sim)=Error_norm(y_rk,y_best_rk,curr_tau,T_end);    
+    
 end
 
 figure(1)
@@ -89,15 +127,15 @@ h_rk_Enum=plot(E.compareNum.tau,E.compareNum.rungekutta,'g*');
 plot(E.compareNum.tau,E.compareNum.rungekutta,'g');
 
 legend([h_ee_Eana,h_he_Eana,h_rk_Eana,h_ee_Enum,h_he_Enum,h_rk_Enum],...
-'Error explicit euler analytical',...
-'Error heun analytical',...
-'Error runge kutta analytical',...
-'Error explicit euler numerical',...
-'Error heun numerical',...
-'Error runge kutta numerical');
+    'Error explicit euler analytical',...
+    'Error heun analytical',...
+    'Error runge kutta analytical',...
+    'Error explicit euler numerical',...
+    'Error heun numerical',...
+    'Error runge kutta numerical');
 
-set(gca,'Xscale','log')
-set(gca,'Yscale','log')
+%set(gca,'Xscale','log')
+%set(gca,'Yscale','log')
 
 hold off
 
@@ -113,7 +151,7 @@ hold off
 % h_rk_pt     =plot(t_rk,y_rk,'gx');
 % legend([h_ana_p,h_ana_dp,h_ee_pt,h_h_pt,h_rk_pt],'p(x) analytical','dp(x)','p(x) explicit euler','p(x) heun','p(x) runge kutta 4th');
 % hold off
-% 
+%
 % figure(2)
 % hold on
 % title('error')
