@@ -1,69 +1,70 @@
 close all;
-T_end=10;
-%T_end=5;
-curr_tau=T_end/100;
-t=0:curr_tau:T_end;
+clear all;
 
-tau_num=T_end*1./2.^(10:-1:0);
+euler_index = 1;
+heun_index = 2;
+runge_kutta_index = 3;
+
+t_end=10;
+%t_end=5;
+
+tau=t_end*1./2.^(10:-1:0); 
 %tau_num=[1/8,1/4,1/2,1];
-n_sim=numel(tau_num);
+tau_count=numel(tau);
 
 E=struct();
 
-E.compareAna.tau=zeros(n_sim,1);
-E.compareAna.euler=zeros(n_sim,1);
-E.compareAna.heun=zeros(n_sim,1);
-E.compareAna.rungekutta=zeros(n_sim,1);
-E.compareNum.tau=zeros(n_sim,1);
-E.compareNum.euler=zeros(n_sim,1);
-E.compareNum.heun=zeros(n_sim,1);
-E.compareNum.rungekutta=zeros(n_sim,1);
-
-for sim=1:n_sim
-
-curr_tau=tau_num(sim);
-
-y0=1;
+E.compareAna.tau=zeros(tau_count,1);
+E.compareAna.euler=zeros(tau_count,1);
+E.compareAna.heun=zeros(tau_count,1);
+E.compareAna.rungekutta=zeros(tau_count,1);
+E.compareNum.tau=zeros(tau_count,1);
+E.compareNum.euler=zeros(tau_count,1);
+E.compareNum.heun=zeros(tau_count,1);
+E.compareNum.rungekutta=zeros(tau_count,1);
 
 n_schemes=3;
+y0=1;
 
-t=0:curr_tau:T_end;
+for sim=1:tau_count
 
-[t_ee,y_ee]=explicit_euler(@dp,y0,curr_tau,T_end);
-[t_h,y_h]=heun(@dp,y0,curr_tau,T_end);
-[t_rk,y_rk]=runge_kutta_4(@dp,y0,curr_tau,T_end);
+curr_tau=tau(sim);
+
+t=0:curr_tau:t_end;
+
+[t_ee,y_ee]=explicit_euler(@dp,y0,curr_tau,t_end);
+[t_h,y_h]=heun(@dp,y0,curr_tau,t_end);
+[t_rk,y_rk]=runge_kutta_4(@dp,y0,curr_tau,t_end);
 
 %[t_ode45,y_ode45]=ode45(@dp,[0 T_end],y0);
 
 y_num=zeros(n_schemes,size(t,2));
-y_num(1,:)=y_ee;
-y_num(2,:)=y_h;
-y_num(3,:)=y_rk;
+y_num(euler_index,:)=y_ee;
+y_num(heun_index,:)=y_h;
+y_num(runge_kutta_index,:)=y_rk;
 
-t_num=zeros(n_schemes,size(t,2));
-t_num(1,:)=t_ee;
-t_num(2,:)=t_h;
-t_num(3,:)=t_rk;
+t_num=zeros(size(y_num));
+t_num(euler_index,:)=t_ee;
+t_num(heun_index,:)=t_h;
+t_num(runge_kutta_index,:)=t_rk;
 
 curr_Errors_ana=zeros(n_schemes,1);
-for i = 1:n_schemes
-curr_Errors_ana(i)=Error_norm(y_num(i,:),p(t_num(i,:)),curr_tau,T_end);
+for i = 1:n_schemes    
+    curr_Errors_ana(i)=Error_norm(y_num(i,:),p(t_num(i,:)),curr_tau,t_end);
 end
 
-E.compareAna.tau(sim)=curr_tau;
-E.compareAna.euler(sim)=curr_Errors_ana(1);
-E.compareAna.heun(sim)=curr_Errors_ana(2);
-E.compareAna.rungekutta(sim)=curr_Errors_ana(3);
+E.compareAna.euler(sim)=curr_Errors_ana(euler_index);
+E.compareAna.heun(sim)=curr_Errors_ana(heun_index);
+E.compareAna.rungekutta(sim)=curr_Errors_ana(runge_kutta_index);
 
-%%%%%not correctly implemented!!!! BEGIN
-best_scheme=(curr_Errors_ana==min(curr_Errors_ana));
-
-y_best=y_num(best_scheme,:);
-E.compareNum.tau(sim)=curr_tau;
-E.compareNum.euler(sim)=Error_norm(y_ee,y_best,curr_tau,T_end);
-E.compareNum.heun(sim)=Error_norm(y_h,y_best,curr_tau,T_end);
-E.compareNum.rungekutta(sim)=Error_norm(y_rk,y_best,curr_tau,T_end);
-%%%%%not correctly implemented!!!! END
+y_best = zeros(size(y_num));
+if sim==1 %%Case when curr_tau is minimum  
+    y_best=y_num;    
+else
+    E.compareNum.euler(sim)=Error_norm(y_ee,y_best(euler_index,:),curr_tau,t_end);
+    E.compareNum.heun(sim)=Error_norm(y_h,y_best(heun_index,:),curr_tau,t_end);
+    E.compareNum.rungekutta(sim)=Error_norm(y_rk,y_best(runge_kutta_index,:),curr_tau,t_end);
+end
 
 end
 
@@ -74,19 +75,19 @@ title('Error Plot')
 xlabel('tau')
 ylabel('Error')
 
-h_ee_Eana=plot(E.compareAna.tau,E.compareAna.euler,'rx');
-plot(E.compareAna.tau,E.compareAna.euler,'r');
-h_he_Eana=plot(E.compareAna.tau,E.compareAna.heun,'bx');
-plot(E.compareAna.tau,E.compareAna.heun,'b');
-h_rk_Eana=plot(E.compareAna.tau,E.compareAna.rungekutta,'gx');
-plot(E.compareAna.tau,E.compareAna.rungekutta,'g');
+h_ee_Eana=plot(tau,E.compareAna.euler,'rx');
+plot(tau,E.compareAna.euler,'r');
+h_he_Eana=plot(tau,E.compareAna.heun,'bx');
+plot(tau,E.compareAna.heun,'b');
+h_rk_Eana=plot(tau,E.compareAna.rungekutta,'gx');
+plot(tau,E.compareAna.rungekutta,'g');
 
-h_ee_Enum=plot(E.compareNum.tau,E.compareNum.euler,'r*');
-plot(E.compareNum.tau,E.compareNum.euler,'r');
-h_he_Enum=plot(E.compareNum.tau,E.compareNum.heun,'b*');
-plot(E.compareNum.tau,E.compareNum.heun,'b');
-h_rk_Enum=plot(E.compareNum.tau,E.compareNum.rungekutta,'g*');
-plot(E.compareNum.tau,E.compareNum.rungekutta,'g');
+h_ee_Enum=plot(tau,E.compareNum.euler,'r*');
+plot(tau,E.compareNum.euler,'r');
+h_he_Enum=plot(tau,E.compareNum.heun,'b*');
+plot(tau,E.compareNum.heun,'b');
+h_rk_Enum=plot(tau,E.compareNum.rungekutta,'g*');
+plot(tau,E.compareNum.rungekutta,'g');
 
 legend([h_ee_Eana,h_he_Eana,h_rk_Eana,h_ee_Enum,h_he_Enum,h_rk_Enum],...
 'Error explicit euler analytical',...
