@@ -25,12 +25,17 @@ E.compareNum.rungekutta=zeros(tau_count,1);
 
 n_schemes=3;
 y0=1;
+y_best = 0;
 
 for sim=1:tau_count
 
 curr_tau=tau(sim);
 
 t=0:curr_tau:t_end;
+
+if ~y_best
+    y_best = zeros(n_schemes,size(t,2));
+end
 
 [t_ee,y_ee]=explicit_euler(@dp,y0,curr_tau,t_end);
 [t_h,y_h]=heun(@dp,y0,curr_tau,t_end);
@@ -57,13 +62,16 @@ E.compareAna.euler(sim)=curr_Errors_ana(euler_index);
 E.compareAna.heun(sim)=curr_Errors_ana(heun_index);
 E.compareAna.rungekutta(sim)=curr_Errors_ana(runge_kutta_index);
 
-y_best = zeros(size(y_num));
 if sim==1 %%Case when curr_tau is minimum  
     y_best=y_num;    
-else
-    E.compareNum.euler(sim)=Error_norm(y_ee,y_best(euler_index,:),curr_tau,t_end);
-    E.compareNum.heun(sim)=Error_norm(y_h,y_best(heun_index,:),curr_tau,t_end);
-    E.compareNum.rungekutta(sim)=Error_norm(y_rk,y_best(runge_kutta_index,:),curr_tau,t_end);
+else        
+    y_best_indexes = floor((1:numel(y_ee)).*(curr_tau/tau(1)));
+    invalid_indexes_range = y_best_indexes > numel(y_best(1));
+    y_best_indexes( invalid_indexes_range ) = numel(y_best(1));
+
+    E.compareNum.euler(sim)=Error_norm(y_ee,y_best(euler_index,y_best_indexes),curr_tau,t_end);
+    E.compareNum.heun(sim)=Error_norm(y_h,y_best(heun_index,y_best_indexes),curr_tau,t_end);
+    E.compareNum.rungekutta(sim)=Error_norm(y_rk,y_best(runge_kutta_index,y_best_indexes),curr_tau,t_end);
 end
 
 end
@@ -97,8 +105,8 @@ legend([h_ee_Eana,h_he_Eana,h_rk_Eana,h_ee_Enum,h_he_Enum,h_rk_Enum],...
 'Error heun numerical',...
 'Error runge kutta numerical');
 
-set(gca,'Xscale','log')
-set(gca,'Yscale','log')
+%set(gca,'Xscale','log')
+%set(gca,'Yscale','log')
 
 hold off
 
