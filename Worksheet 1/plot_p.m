@@ -5,11 +5,11 @@ euler_index = 1;
 heun_index = 2;
 runge_kutta_index = 3;
 
-t_end=10;
+t_end=5;
 %t_end=5;
 
-tau=t_end*1./2.^(10:-1:0); 
-%tau_num=[1/8,1/4,1/2,1];
+%tau=t_end*1./2.^(10:-1:0); 
+tau = [1/8,1/4,1/2,1];
 tau_count=numel(tau);
 
 E=struct();
@@ -26,6 +26,7 @@ E.compareNum.rungekutta=zeros(tau_count,1);
 n_schemes=3;
 y0=1;
 y_best = 0;
+t_best = 0;
 
 for sim=1:tau_count
 
@@ -35,13 +36,12 @@ t=0:curr_tau:t_end;
 
 if ~y_best
     y_best = zeros(n_schemes,size(t,2));
+    t_best= zeros(n_schemes,size(t,2));
 end
 
 [t_ee,y_ee]=explicit_euler(@dp,y0,curr_tau,t_end);
 [t_h,y_h]=heun(@dp,y0,curr_tau,t_end);
 [t_rk,y_rk]=runge_kutta_4(@dp,y0,curr_tau,t_end);
-
-%[t_ode45,y_ode45]=ode45(@dp,[0 T_end],y0);
 
 y_num=zeros(n_schemes,size(t,2));
 y_num(euler_index,:)=y_ee;
@@ -53,25 +53,31 @@ t_num(euler_index,:)=t_ee;
 t_num(heun_index,:)=t_h;
 t_num(runge_kutta_index,:)=t_rk;
 
-curr_Errors_ana=zeros(n_schemes,1);
+curr_errors_ana=zeros(n_schemes,1);
 for i = 1:n_schemes    
-    curr_Errors_ana(i)=Error_norm(y_num(i,:),p(t_num(i,:)),curr_tau,t_end);
+    curr_errors_ana(i)=error_norm(y_num(i,:),p(t_num(i,:)),curr_tau,t_end);
 end
 
-E.compareAna.euler(sim)=curr_Errors_ana(euler_index);
-E.compareAna.heun(sim)=curr_Errors_ana(heun_index);
-E.compareAna.rungekutta(sim)=curr_Errors_ana(runge_kutta_index);
+E.compareAna.euler(sim)=curr_errors_ana(euler_index);
+E.compareAna.heun(sim)=curr_errors_ana(heun_index);
+E.compareAna.rungekutta(sim)=curr_errors_ana(runge_kutta_index);
 
-if sim==1 %%Case when curr_tau is minimum  
-    y_best=y_num;    
-else        
-    y_best_indexes = floor((1:numel(y_ee)).*(curr_tau/tau(1)));
-    invalid_indexes_range = y_best_indexes > numel(y_best(1));
-    y_best_indexes( invalid_indexes_range ) = numel(y_best(1));
+if sim==1 %%Case when curr_tau is minimum
+    y_best=y_num;
+    t_best=t_num; 
+    E.compareNum.euler(sim)=0;         
+    E.compareNum.heun(sim)=0;
+    E.compareNum.rungekutta(sim)=0;
+else   
+    y_best_interpolated = zeros( n_schemes, numel(y_num(euler_index,:)));
+    y_best_interpolated(euler_index,:) = interp1(t_best(euler_index,:), y_best(euler_index,:), t_num(euler_index,:));
+    y_best_interpolated(heun_index,:) = interp1(t_best(heun_index,:), y_best(heun_index,:), t_num(euler_index,:));
+    y_best_interpolated(runge_kutta_index,:) = interp1(t_best(runge_kutta_index,:), y_best(runge_kutta_index,:), t_num(euler_index,:));    
+    y_best_interpolated(euler_index,:)
 
-    E.compareNum.euler(sim)=Error_norm(y_ee,y_best(euler_index,y_best_indexes),curr_tau,t_end);
-    E.compareNum.heun(sim)=Error_norm(y_h,y_best(heun_index,y_best_indexes),curr_tau,t_end);
-    E.compareNum.rungekutta(sim)=Error_norm(y_rk,y_best(runge_kutta_index,y_best_indexes),curr_tau,t_end);
+    E.compareNum.euler(sim)=error_norm(y_ee,y_best_interpolated(euler_index,:),curr_tau,t_end);         
+    E.compareNum.heun(sim)=error_norm(y_h,y_best_interpolated(heun_index,:),curr_tau,t_end);
+    E.compareNum.rungekutta(sim)=error_norm(y_rk,y_best_interpolated(runge_kutta_index,:),curr_tau,t_end);
 end
 
 end
@@ -105,8 +111,8 @@ legend([h_ee_Eana,h_he_Eana,h_rk_Eana,h_ee_Enum,h_he_Enum,h_rk_Enum],...
 'Error heun numerical',...
 'Error runge kutta numerical');
 
-%set(gca,'Xscale','log')
-%set(gca,'Yscale','log')
+% set(gca,'Xscale','log')
+% set(gca,'Yscale','log')
 
 hold off
 
