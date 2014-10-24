@@ -20,6 +20,14 @@ E.approx_error.euler = zeros( tau_count, 1 );
 E.approx_error.heun = zeros( tau_count, 1 );
 E.approx_error.rungekutta = zeros( tau_count, 1 );
 
+E.red_error.euler = 0;
+E.red_error.heun = 0;
+E.red_error.rungekutta = 0;
+
+E.red_factor.euler = zeros( tau_count, 1 );;
+E.red_factor.heun = zeros( tau_count, 1 );;
+E.red_factor.rungekutta = zeros( tau_count, 1 );;
+
 schemes_count = 3;
 y0=1;
 y_best = 0;
@@ -61,9 +69,20 @@ E.error.rungekutta( current_tau_index ) = curr_errors_ana( runge_kutta_index );
 [t_h_halved,y_h_halved] = heun( @dp, y0, curr_tau/2, t_end );
 [t_rk_halved,y_rk_halved] = runge_kutta_4( @dp, y0, curr_tau/2, t_end );
 
-E.red_error.euler( current_tau_index ) = error_norm( y_ee_halved(1:2:numel(y_ee_halved)), p(t_num(euler_index,:)), curr_tau, t_end);
-E.red_error.heun( current_tau_index ) = error_norm(y_h_halved(1:2:numel(y_ee_halved)), p(t_num(heun_index,:)), curr_tau, t_end);
-E.red_error.rungekutta( current_tau_index ) = error_norm( y_rk_halved(1:2:numel(y_ee_halved)), p(t_num(runge_kutta_index,:)), curr_tau, t_end);
+if current_tau_index == 1 %%Case when curr_tau is minimum
+    E.red_error.euler = error_norm( y_ee_halved , p(t_ee_halved), curr_tau/2, t_end);
+    E.red_error.heun = error_norm(y_h_halved, p(t_h_halved), curr_tau/2, t_end);
+    E.red_error.rungekutta = error_norm( y_rk_halved, p(t_rk_halved), curr_tau/2, t_end);
+    
+    E.red_factor.euler( current_tau_index ) = E.error.euler( current_tau_index ) / E.red_error.euler;
+    E.red_factor.heun( current_tau_index ) = E.error.heun( current_tau_index ) / E.red_error.heun;
+    E.red_factor.rungekutta( current_tau_index ) = E.error.rungekutta( current_tau_index ) / E.red_error.rungekutta;
+else
+    E.red_factor.euler( current_tau_index ) = E.error.euler( current_tau_index ) / E.error.euler( current_tau_index - 1 );
+    E.red_factor.heun( current_tau_index ) = E.error.heun( current_tau_index ) / E.error.heun( current_tau_index - 1 );
+    E.red_factor.rungekutta( current_tau_index ) = E.error.rungekutta( current_tau_index ) / E.error.rungekutta( current_tau_index - 1 );
+end
+
 
 if current_tau_index == 1 %%Case when curr_tau is minimum
     y_best=y_num;
@@ -88,6 +107,10 @@ end
 
 end
 
+E.red_factor.euler
+E.red_factor.heun
+E.red_factor.rungekutta
+
 figure(1)
 hold on
 
@@ -101,13 +124,6 @@ h_heun_error = plot( tau,E.error.heun,'bx' );
 plot( tau, E.error.heun, 'b' );
 h_rungekutta_error = plot( tau, E.error.rungekutta, 'gx' );
 plot( tau, E.error.rungekutta, 'g');
-
-h_euler_red_error = plot( tau, E.red_error.euler, 'ro-' );
-plot( tau, E.red_error.euler, 'r' );
-h_heun_red_error = plot( tau, E.red_error.heun, 'bo-' );
-plot( tau,E.red_error.heun,'b');
-h_rungekutta_red_error=plot(tau,E.red_error.rungekutta,'go-');
-plot( tau,E.red_error.rungekutta,'g');
 
 h_euler_approx_error = plot( tau, E.approx_error.euler, 'r*' );
 plot( tau, E.approx_error.euler, 'r' );
