@@ -1,6 +1,8 @@
 clear all;
 close all;
 
+%git working?
+
 %symbolic formulation of the ODE dp(p)=7*(1-p/10)*p
 syms sym_p;
 sym_dp(sym_p)=7*(1-sym_p/10)*sym_p;
