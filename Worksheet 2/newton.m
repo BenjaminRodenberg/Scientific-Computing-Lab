@@ -1,9 +1,10 @@
-function [ x ] = newton( f,df,x0,tol )
+function [ x,history ] = newton( f,df,x0,tol )
 %NEWTON newton method for solving root equation numerically
 
 x=x0;
 %error at the beginning = inf
 errornew=inf;
+history=x;
 
 while(errornew>tol)
     
@@ -14,11 +15,13 @@ while(errornew>tol)
     %calculate error via difference of approximate solution
     errorold=errornew;
     errornew=abs(x-xold);
+    history=[history x];
     
-    %check weather newton method does converge. If newton method does
+    %check whether newton method does converge. If newton method does
     %converge, the error decreases monotonically.
-    if(errornew>errorold)
-        errornew('newton iteration does not converge!');
+    if(errornew>=errorold)
+        warning('newton iteration does not converge!');
+        break;
     end
         
 end
