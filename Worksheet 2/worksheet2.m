@@ -3,7 +3,7 @@ close all;
 
 %symbolic formulation of the ODE dp(p)=7*(1-p/10)*p
 syms sym_p;
-sym_dp(sym_p)=7*(1-sym_p/10)*sym_p;
+sym_dp( sym_p ) = 7 * ( 1 - sym_p / 10 ) * sym_p;
 
 
 %conversion from symbolic form to matlab function form:
@@ -17,20 +17,22 @@ T_end=5;
 p_ana=@(t)200./(20-10*exp(-7*t));
 t_ana=0:.001:T_end;
 
-%ODE from worksheet 1
-sym_dp(sym_p)=(1-sym_p/10).*sym_p;
-p0=1;
-p_ana=@(t)10./(1+9*exp(-t));
-dp=matlabFunction(sym_dp);
+% ODE from worksheet 1
+% sym_dp(sym_p)=(1-sym_p/10).*sym_p;
+% p0=1;
+% p_ana=@(t)10./(1+9*exp(-t));
+% dp=matlabFunction(sym_dp);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % a) Plot the function p(t) in a graph
 
-figure(1)
+fig_id=1;
+figure(fig_id)
 hold on
 title('exact solution of ODE dp(p)=7*(1-p/10)*p')
 plot(t_ana,p_ana(t_ana));
 hold off
+fig_id=fig_id+1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %the indeces are defining the following numerical methods:
@@ -50,14 +52,12 @@ method_name={'explicit_euler','heun','implicit_euler',...
 %different timestep size
 tau_range= (.5).^(0:1:5);
 
-% only explicit euler method and heun
-for i = 1:2
-    
-    numerical_solutions.(method_name{i})=solveWithNumericalMethod(...
-        i,tau_range,T_end,p0,dp,p_ana);         
+for method_id = [explicit_euler_index,heun_index]
+    numerical_solutions.(method_name{method_id})=solve_with_numerical_method(...
+        method_id,tau_range,T_end,p0,dp,p_ana);         
 
-    plotNumericalSolutions( numerical_solutions,method_name{i},i+1);
-
+    plot_numerical_solutions( numerical_solutions,method_name{method_id},fig_id);
+    fig_id=fig_id+1;
 end
 
 
@@ -70,14 +70,13 @@ end
 clear tau_range;
 tau_range=(.5).^(1:1:5);
 
-% only implicit euler method
-for i = 3
+for method_id = [implicit_euler_index, adams_moulton_index]
     
-    numerical_solutions.(method_name{i})=solveWithNumericalMethod(...
-        i,tau_range,T_end,p0,sym_dp,p_ana);         
+    numerical_solutions.(method_name{method_id})=solve_with_numerical_method(...
+        method_id,tau_range,T_end,p0,sym_dp,p_ana);         
 
-    plotNumericalSolutions( numerical_solutions,method_name{i},i+1);
-
+    plot_numerical_solutions( numerical_solutions,method_name{method_id},fig_id);
+    fig_id=fig_id+1;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,11 +85,11 @@ end
 % g) Compare the results of the implicit methods...
 
 %calculate error and error reduction and write results down
-for i = 1:3
-    numerical_solutions.(method_name{i})=...
-        calculateError(numerical_solutions.(method_name{i}));
+for method_id = [explicit_euler_index,heun_index,implicit_euler_index, adams_moulton_index]
+    numerical_solutions.(method_name{method_id})=...
+        calculate_errors(numerical_solutions.(method_name{method_id}));
     
-    writeErrors(numerical_solutions.(method_name{i}),method_name{i});
+    write_errors(numerical_solutions.(method_name{method_id}),method_name{method_id});
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,4 +1,4 @@
-function [ sol ] = solveWithNumericalMethod( method_id,tau_range,T_end,p0,dp,p_ana )
+function [ sol ] = solve_with_numerical_method( method_id,tau_range,T_end,p0,dp,p_ana )
 %SOLVEWITHNUMERICALMETHOD solves the given ODE dp with different timesteps
 %given in tau_range until the time T_end is reached. The initial value p0
 %is used. The ODE solver is specified by method_ID. The reference solution
@@ -24,7 +24,7 @@ for i = 1:numel(tau_range)
         case 3
             [t,y,method_computation_time]=implicit_euler(dp,p0,tau,T_end);
         case 4
-            [t,y,method_computation_time] = adams_moulton(dp,p0,tau,T_end);            
+            error('adams_moulton method not defined!');
         case 5
             error('adams_moulton method linearization 1 not defined!');
         case 6
