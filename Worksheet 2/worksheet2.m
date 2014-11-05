@@ -1,29 +1,26 @@
-% Q&A: Symbolic OK? Rechenzeit bei tau=1 < tau=0.5 ? Warum ?
-
-clear all;
-close all;
+%clear all;
+%close all;
 
 % symbolic formulation of the ODE dp(p)=7*(1-p/10)*p
 syms sym_p;
-sym_dp(sym_p)=7*(1-sym_p/10)*sym_p;
+sym_dp( sym_p ) = 7 * ( 1 - sym_p / 10 ) * sym_p;
 
-
-% conversion from symbolic form to matlab function form:
-% i.e.: dp=@(p)7*(1-p/10).*p;
-dp=matlabFunction(sym_dp);
-p0=20;
+%conversion from symbolic form to matlab function form:
+%i.e.: dp=@(p)7*(1-p/10).*p;
+dp = matlabFunction( sym_dp );
+p0 = 20;
 
 T_end=5;
 
-% analytical solution of ODE
-p_ana=@(t)200./(20-10*exp(-7*t));
-t_ana=0:.001:T_end;
+%analytical solution of ODE
+p_ana = @(t) 200./( 20-10 * exp(-7*t) );
+t_ana = 0:.001:T_end;
 
 % ODE from worksheet 1
-sym_dp(sym_p)=(1-sym_p/10).*sym_p;
-p0=1;
-p_ana=@(t)10./(1+9*exp(-t));
-dp=matlabFunction(sym_dp);
+% sym_dp(sym_p)=(1-sym_p/10).*sym_p;
+% p0=1;
+% p_ana=@(t)10./(1+9*exp(-t));
+% dp=matlabFunction(sym_dp);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % a) Plot the function p(t) in a graph
@@ -55,8 +52,6 @@ method_name={'explicit_euler','heun','implicit_euler',...
 tau_range= (.5).^(0:1:5);
 
 for method_id = [explicit_euler_index,heun_index]
-    
-    
     numerical_solutions.(method_name{method_id})=solve_with_numerical_method(...
         method_id,tau_range,T_end,p0,dp,p_ana);         
 
@@ -72,9 +67,24 @@ end
 
 %different timestep size
 clear tau_range;
-tau_range=(.5).^(1:1:5);
+tau_range = (.5).^(1:1:5);
 
-for method_id = [implicit_euler_index]
+for method_id = [implicit_euler_index, adams_moulton_index]
+    
+    numerical_solutions.(method_name{method_id})=solve_with_numerical_method(...
+        method_id,tau_range,T_end,p0,sym_dp,p_ana);         
+
+    plot_numerical_solutions( numerical_solutions,method_name{method_id},fig_id);
+    fig_id=fig_id+1;
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% f) For both methodes implemented ...
+
+%different timestep size
+for method_id = [adams_moulton_l1_index, adams_moulton_l2_index]
     
     numerical_solutions.(method_name{method_id})=solve_with_numerical_method(...
         method_id,tau_range,T_end,p0,sym_dp,p_ana);         
@@ -89,7 +99,8 @@ end
 % g) Compare the results of the implicit methods...
 
 %calculate error and error reduction and write results down
-for method_id = [explicit_euler_index,heun_index,implicit_euler_index]
+for method_id = [explicit_euler_index,heun_index,implicit_euler_index,...
+        adams_moulton_index, adams_moulton_l1_index, adams_moulton_l2_index]
     numerical_solutions.(method_name{method_id})=...
         calculate_errors(numerical_solutions.(method_name{method_id}));
     

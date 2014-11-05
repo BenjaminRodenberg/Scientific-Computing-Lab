@@ -16,22 +16,23 @@ for i = 1:numel(tau_range)
         
     %chooses the method corresponding to method_id
     %for implicit methods dp has to be a symbolic function!
-    
-    if(method_id==1)
-        [t,y,method_computation_time]=explicit_euler(dp,p0,tau,T_end);    
-    elseif(method_id==2)
-        [t,y,method_computation_time]=heun(dp,p0,tau,T_end);    
-    elseif(method_id==3)
-        [t,y,method_computation_time]=implicit_euler(dp,p0,tau,T_end);    
-    elseif(method_id==4)
-        error('adams_moulton method not defined!');
-    elseif(method_id==5)
-        error('adams_moulton method linearization 1 not defined!');
-    elseif(method_id==6)
-        error('adams_moulton method linearization 2 not defined!');
-    else
-        error('unknown method id');
+    switch method_id        
+        case 1
+            [t,y,method_computation_time] = explicit_euler(dp,p0,tau,T_end);
+        case 2
+            [t,y,method_computation_time] = heun(dp,p0,tau,T_end);
+        case 3
+            [t,y,method_computation_time] = implicit_euler(dp,p0,tau,T_end);
+        case 4
+            [t,y,method_computation_time] = adams_moulton(dp,p0,tau,T_end);            
+        case 5
+            [t,y,method_computation_time] = adams_moulton_linearisation1(dp,p0,tau,T_end);            
+        case 6
+            [t,y,method_computation_time] = adams_moulton_linearisation2(dp,p0,tau,T_end);            
+        otherwise 
+            error('unknown method id');        
     end
+
     computation_time(i)=method_computation_time;
     
     %save results

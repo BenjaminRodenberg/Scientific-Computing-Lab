@@ -1,12 +1,12 @@
 function [  ] = write_errors( sols,method_name )
-%WRITEERRORS writes the error and the error reduction of a numerical method
+%WRITE_ERRORS writes the error and the error reduction of a numerical method
 %into command window.
 
 %get data from stuct
-tau_range=sols.tau;
-errors=sols.errors;
-error_reduction=sols.error_reduction;
-computation_time=sols.computation_time;
+tau_range = sols.tau;
+errors = sols.errors;
+error_reduction = sols.error_reduction;
+computation_time = sols.computation_time;
 
 fprintf('%s:\n',method_name)
 fprintf('------------------------------------------------------------------------------------------------------------\n')
