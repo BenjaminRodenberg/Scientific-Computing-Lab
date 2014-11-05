@@ -1,5 +1,5 @@
-function [ sols ] = calculateError( sols )
-%CALCULATEERROR calculates the L2-Error of numerical solutions of an ODE
+function [ sols ] = calculate_errors( sols )
+%CALCULATE_ERRORS calculates the L2-Error of numerical solutions of an ODE
 %using different ODE solvers. Finally also the error reduction with
 %decreasing timestep size is calculated.
 
@@ -21,7 +21,7 @@ for i = 1:numel(tau_range)
     y_ref=sols.(field_name).y_ref;
     
     %calculate L2-Error
-    curr_error = Error_norm( y , y_ref , tau , T_end);
+    curr_error = error_norm( y , y_ref , tau , T_end);
     
     %if error is equal to zero the function values are usually not defined
     %and therefore the error is inf

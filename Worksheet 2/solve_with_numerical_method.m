@@ -1,4 +1,4 @@
-function [ sol ] = solveWithNumericalMethod( method_id,tau_range,T_end,p0,dp,p_ana )
+function [ sol ] = solve_with_numerical_method( method_id,tau_range,T_end,p0,dp,p_ana )
 %SOLVEWITHNUMERICALMETHOD solves the given ODE dp with different timesteps
 %given in tau_range until the time T_end is reached. The initial value p0
 %is used. The ODE solver is specified by method_ID. The reference solution
@@ -18,17 +18,17 @@ for i = 1:numel(tau_range)
     %for implicit methods dp has to be a symbolic function!
     switch method_id        
         case 1
-            [t,y,method_computation_time]=explicit_euler(dp,p0,tau,T_end);
+            [t,y,method_computation_time] = explicit_euler(dp,p0,tau,T_end);
         case 2
-            [t,y,method_computation_time]=heun(dp,p0,tau,T_end);
+            [t,y,method_computation_time] = heun(dp,p0,tau,T_end);
         case 3
-            [t,y,method_computation_time]=implicit_euler(dp,p0,tau,T_end);
+            [t,y,method_computation_time] = implicit_euler(dp,p0,tau,T_end);
         case 4
             [t,y,method_computation_time] = adams_moulton(dp,p0,tau,T_end);            
         case 5
-            error('adams_moulton method linearization 1 not defined!');
+            [t,y,method_computation_time] = adams_moulton_linearisation1(dp,p0,tau,T_end);            
         case 6
-            error('adams_moulton method linearization 2 not defined!');
+            [t,y,method_computation_time] = adams_moulton_linearisation2(dp,p0,tau,T_end);            
         otherwise 
             error('unknown method id');        
     end

@@ -1,5 +1,5 @@
-clear all;
-close all;
+%clear all;
+%close all;
 
 %symbolic formulation of the ODE dp(p)=7*(1-p/10)*p
 syms sym_p;
@@ -82,10 +82,29 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% f) For both methodes implemented ...
+
+%different timestep size
+clear tau_range;
+tau_range=(.5).^(1:1:5);
+
+for method_id = [adams_moulton_l1_index, adams_moulton_l2_index]
+    
+    numerical_solutions.(method_name{method_id})=solve_with_numerical_method(...
+        method_id,tau_range,T_end,p0,sym_dp,p_ana);         
+
+    plot_numerical_solutions( numerical_solutions,method_name{method_id},fig_id);
+    fig_id=fig_id+1;
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % g) Compare the results of the implicit methods...
 
 %calculate error and error reduction and write results down
-for method_id = [explicit_euler_index,heun_index,implicit_euler_index, adams_moulton_index]
+for method_id = [explicit_euler_index,heun_index,implicit_euler_index,...
+        adams_moulton_index, adams_moulton_l1_index, adams_moulton_l2_index]
     numerical_solutions.(method_name{method_id})=...
         calculate_errors(numerical_solutions.(method_name{method_id}));
     

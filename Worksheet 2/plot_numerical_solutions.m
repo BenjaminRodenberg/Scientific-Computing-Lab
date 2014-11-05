@@ -1,5 +1,5 @@
-function [ fig_h ] = plotNumericalSolutions( numerical_solutions,method_name,fig_no)
-%PLOTNUMERICALSOLUTION plots numerical solutions using the same solver for
+function [ fig_h ] = plot_numerical_solutions( numerical_solutions,method_name,fig_no)
+%PLOT_NUMERICAL_SOLUTION plots numerical solutions using the same solver for
 %different timestep sizes into figure(fig_no) and compares the numerical
 %solution to analytical solution
 

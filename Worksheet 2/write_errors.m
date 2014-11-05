@@ -1,5 +1,5 @@
-function [  ] = writeErrors( sols,method_name )
-%WRITEERRORS writes the error and the error reduction of a numerical method
+function [  ] = write_errors( sols,method_name )
+%WRITE_ERRORS writes the error and the error reduction of a numerical method
 %into command window.
 
 %get data from stuct
