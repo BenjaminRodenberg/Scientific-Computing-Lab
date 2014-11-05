@@ -22,8 +22,9 @@ while( curr_error > tol && new_df_x~=0)
     
     x_history = [x_history new_x];
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
+    %check weather newton method does converge. If newton method does
+    %converge, the error decreases monotonically.
+    
     % The usual convergence test has the following form : 
     %
     % if( abs(new_f_x)>abs(old_f_x) ) STOP
@@ -32,21 +33,8 @@ while( curr_error > tol && new_df_x~=0)
     % as a quotient in order to consider a sign change from old_f_x to
     % new_f_x. If a sign change happens, the absolute value of new_f_x
     % may be bigger than the absolute value of old_f_x, but still the
-    % newton method converges. Example input:
-    %
-    % newton(@(x)1-x^2,@(x)-2*x,.1,10^-4,'')
+    % newton method 
     % 
-    % For special examples this may of course lead to worse results.
-    % Example input:
-    %
-    % newton(@(x)atan(x),@(x)1/(x^2+1),.4,10^-4,'') 
-    % newton(@(x)atan(x),@(x)1/(x^2+1),1.6,10^-4,'') 
-    %
-    % Still for our purposes this method is sufficient.
-    %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    % check weather newton method does converge. 
     if( new_f_x/old_f_x > 1 )
         %calculate error via difference of approximate solution
         curr_error = abs( new_x - old_x );
