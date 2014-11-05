@@ -6,20 +6,15 @@ new_x = x0;
 curr_error = inf;
 x_history = new_x;
 
-new_f_x = f(new_x);
-new_df_x = df(new_x);
+%newton method fixpoint equation
+phi=@(x)x-f(x)/df(x);
 
-while( curr_error > tol && new_df_x~=0)
+while( curr_error > tol && df(new_x)~=0)
     
-    old_x = new_x;
-    old_f_x = new_f_x;
-    old_df_x = new_df_x;
+    old_x = new_x;      
     
-    %newton method fixpoint equation
-    new_x = old_x - (  old_f_x / old_df_x );                    
-    new_f_x = f(new_x);
-    new_df_x=df(new_x);
-    
+    new_x = phi(old_x);    
+        
     x_history = [x_history new_x];
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -27,27 +22,22 @@ while( curr_error > tol && new_df_x~=0)
     % The usual convergence test has the following form : 
     %
     % if( abs(new_f_x)>abs(old_f_x) ) STOP
-    % 
-    % Here the absolute values are removed and the equation is reformulated
-    % as a quotient in order to consider a sign change from old_f_x to
-    % new_f_x. If a sign change happens, the absolute value of new_f_x
-    % may be bigger than the absolute value of old_f_x, but still the
-    % newton method converges. Example input:
+    %
+    % This criterion does not lead to a correct result for the following
+    % input, even if the method converges:
     %
     % newton(@(x)1-x^2,@(x)-2*x,.1,10^-4,'')
     % 
-    % For special examples this may of course lead to worse results.
-    % Example input:
-    %
+    % Therefore we are using the contraction condition from banach's
+    % fixpoint theorem. The following examples show the correct behaviour:
+    %    
     % newton(@(x)atan(x),@(x)1/(x^2+1),.4,10^-4,'') 
     % newton(@(x)atan(x),@(x)1/(x^2+1),1.6,10^-4,'') 
-    %
-    % Still for our purposes this method is sufficient.
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     % check weather newton method does converge. 
-    if( new_f_x/old_f_x > 1 )
+    if( abs(phi(new_x)-phi(old_x))/abs(new_x-old_x) > 1 )
         %calculate error via difference of approximate solution
         curr_error = abs( new_x - old_x );
         warning(['for ',calling_function,' at x = ',mat2str(new_x),...
