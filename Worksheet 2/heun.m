@@ -9,8 +9,8 @@ y(1) = y0;
 
 for n = 1:(numel(y)-1)
     
-    y_mid = y(n)+tau*f(y(n));    
-    y(n+1) = .5*(y(n)+y_mid+tau*f(y_mid));
+    y_mid = y(n) + tau*f( y(n) );    
+    y(n+1) = .5*( y(n) + y_mid + tau*f(y_mid) );
     
 end
 

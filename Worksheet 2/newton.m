@@ -36,7 +36,7 @@ while( curr_error > tol && df(new_x)~=0)
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    % check weather newton method does converge. 
+    % check whether newton method does converge. 
     if( abs(phi(new_x)-phi(old_x))/abs(new_x-old_x) > 1 )
         %calculate error via difference of approximate solution
         curr_error = abs( new_x - old_x );
