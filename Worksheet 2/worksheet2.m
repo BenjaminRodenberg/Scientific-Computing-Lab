@@ -34,7 +34,7 @@ hold off
 fig_id=fig_id+1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%the indeces are defining the following numerical methods:
+%the indices are defining the following numerical methods:
 explicit_euler_index    = 1;
 heun_index              = 2;
 implicit_euler_index    = 3;
