@@ -7,8 +7,8 @@
 %sym_static_equation(x,y) = -2*pi.^2*sin(pi*x)*sin(pi*y);
 %static_equation = matlabFunction( simplify(  sym_stat_equation));
 
-Ny=3;
-Nx=3;
+Ny = 3;
+Nx = 3;
 
-[matrix_A, matrix_x, matrix_b] = create_Matrices(Nx,Ny)
+[matrix_A, matrix_x, matrix_b] = create_matrices( Nx, Ny )
 
