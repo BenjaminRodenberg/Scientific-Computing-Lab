@@ -18,7 +18,7 @@ title(['numerical solution of dp=7*(1-p/10)*p using ',method_name,' method'],...
     'Interpreter','none');
 
 %plot analytical solution
-h(1)=plot(t_ana,y_ana,'k');
+handle_plot(1)=plot(t_ana,y_ana,'k');
 leg_entry{1}='analytical solution';
 
 %col={'r.','rx','r*','rs','r^','rv'};
@@ -30,19 +30,19 @@ for i = 1:numel(tau_range)
     field_name=sprintf('tau%i',i);
     
     %plot numerical solution and create legend entry
-    h(i+1)=plot(numerical_solutions.(method_name).(field_name).t,...
+    handle_plot(i+1)=plot(numerical_solutions.(method_name).(field_name).t,...
         numerical_solutions.(method_name).(field_name).y);    
     leg_entry{i+1}=['numerical solution for tau=',...
         mat2str(numerical_solutions.(method_name).(field_name).tau)];
     
     %set color of plot, color is changing from [0 1 0] to [1 0 0] with
     %decreasing timestep size
-    c=[(i-1)/(numel(tau_range)-1) 1-(i-1)/(numel(tau_range)-1) 0];
-    set(h(i+1),'Color',c);
+    color=[(i-1)/(numel(tau_range)-1) 1-(i-1)/(numel(tau_range)-1) 0];
+    set(handle_plot(i+1),'Color',color);
     
 end
 
-legend(h,leg_entry);
+legend(handle_plot,leg_entry);
 xlabel('t')
 ylabel('p(t)')
 axis([0 5 0 20]);

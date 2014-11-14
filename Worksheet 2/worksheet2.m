@@ -1,21 +1,20 @@
 %clear all;
 %close all;
 
-%symbolic formulation of the ODE dp(p)=7*(1-p/10)*p
+% symbolic formulation of the ODE dp(p)=7*(1-p/10)*p
 syms sym_p;
 sym_dp( sym_p ) = 7 * ( 1 - sym_p / 10 ) * sym_p;
 
-
 %conversion from symbolic form to matlab function form:
 %i.e.: dp=@(p)7*(1-p/10).*p;
-dp=matlabFunction(sym_dp);
-p0=20;
+dp = matlabFunction( sym_dp );
+p0 = 20;
 
 T_end=5;
 
 %analytical solution of ODE
-p_ana=@(t)200./(20-10*exp(-7*t));
-t_ana=0:.001:T_end;
+p_ana = @(t) 200./( 20-10 * exp(-7*t) );
+t_ana = 0:.001:T_end;
 
 % ODE from worksheet 1
 % sym_dp(sym_p)=(1-sym_p/10).*sym_p;
@@ -35,7 +34,7 @@ hold off
 fig_id=fig_id+1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%the indeces are defining the following numerical methods:
+%the indices are defining the following numerical methods:
 explicit_euler_index    = 1;
 heun_index              = 2;
 implicit_euler_index    = 3;
@@ -68,7 +67,7 @@ end
 
 %different timestep size
 clear tau_range;
-tau_range=(.5).^(1:1:5);
+tau_range = (.5).^(1:1:5);
 
 for method_id = [implicit_euler_index, adams_moulton_index]
     
@@ -85,9 +84,6 @@ end
 % f) For both methodes implemented ...
 
 %different timestep size
-clear tau_range;
-tau_range=(.5).^(1:1:5);
-
 for method_id = [adams_moulton_l1_index, adams_moulton_l2_index]
     
     numerical_solutions.(method_name{method_id})=solve_with_numerical_method(...

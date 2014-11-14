@@ -1,4 +1,4 @@
-function [ t,y,computation_time ] = explicit_euler(f,y0,tau,T_end)
+function [ t,y,computation_time ] = explicit_euler( f, y0, tau, T_end)
 % numerical solution of ODE using explicit euler scheme
 
 tic;
