@@ -18,6 +18,9 @@ L=assemble_laplacian(N_x,N_y);
 
 %solve System with MATLAB direct solver
 T=L\b;
+
+
+
 %corresponding grid
 [x,y]=meshgrid([h_x:h_x:length_x-h_x],[h_y:h_y:length_y-h_y]);
 

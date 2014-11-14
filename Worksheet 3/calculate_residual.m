@@ -1,4 +1,4 @@
-function [ R ] = calculate_residual( N_x,N_y,b,x,BC )
+function [ residual ] = calculate_residual( N_x,N_y,b,x,BC )
 %CALCULATE_RESIDUAL Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -7,17 +7,14 @@ length_y = 1;
 
 h_x = length_x/(N_x+1);
 h_y = length_y/(N_y+1);
-
-STENCIL = five_pt_stencil(h_x,h_y);
-
 N=(N_x+2*BC)*(N_y+2*BC);
 
-L=zeros(N,N);
+crosshairs_stencil = create_crosshairs_stencil(h_x,h_y);
 
 %saves displacement to neighbouring nodes
 displacement_vector=[-N_x,-1,0,1,N_x];
 
-R=0;
+residual=0;
 
 for i = 1:N_x+2*BC
     for j = 1:N_y+2*BC
@@ -29,24 +26,17 @@ for i = 1:N_x+2*BC
         y_up=j<N_y+2*BC;
         y_dwn=j>1;
         
-        decider=logical([y_dwn,x_dwn,1,x_up,y_up]);
-        current_index_vector=current_node_index+displacement_vector(decider);
+        mask=logical([y_dwn,x_dwn,1,x_up,y_up]);
+        masked_index_vector=current_node_index+displacement_vector(mask);
         
         %local residual set to zero: 0 = b-weights*neighbouring Temperature
         %This can be solved for the temperature on the current node.
-        R=R+(b(current_node_index)-STENCIL(decider)*x(current_index_vector))^2;       
+        residual=residual+(b(current_node_index)-crosshairs_stencil(mask)*x(masked_index_vector))^2;       
     end
 end
 
-R=sqrt(R/N);
+residual=sqrt(residual/N);
 
 return
 
-function [ STENCIL ] = five_pt_stencil( h_x,h_y )
-%FIVE_PT_STENCIL Summary of this function goes here
-%   Detailed explanation goes here
-
-STENCIL=1/(h_x^2*h_y^2)*[h_x^2 h_y^2 -2*(h_y^2+h_y^2) h_y^2 h_x^2];
-
-return
 

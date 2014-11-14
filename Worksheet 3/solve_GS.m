@@ -1,8 +1,8 @@
 close all;
 
-tol=10^-4;
+tolerance=10^-4;
 BC=0;
-R=inf;
+residual=inf;
 
 N_x=14;
 N_y=14;
@@ -19,15 +19,15 @@ T=zeros(N,1);
 %continuous load
 f=@(x,y)-2*pi^2*sin(pi*x).*sin(pi*y);
 %discrete load
-b=assemble_load(N_x,N_y,f,BC);
+b=build_solution_vector(N_x,N_y,f,BC);
 
-h_s=[];
+surface_handle=[];
 
 iteration_counter=0;
 
-while(R>tol)
+while(residual>tolerance)
     T=do_one_Gauss_Seidl_Iteration(N_x,N_y,b,T,BC);
-    R=calculate_residual(N_x,N_y,b,T,BC);
+    residual=calculate_residual(N_x,N_y,b,T,BC);
     
     %corresponding grid
     [x,y]=meshgrid([~BC*h_x:h_x:length_x-~BC*h_x],[~BC*h_y:h_y:length_y-~BC*h_y]);
@@ -55,8 +55,8 @@ while(R>tol)
     hold on
     title('solution of PDE')
     
-    delete(h_s);
-    h_s=surf(X,Y,Z,'FaceColor','interp');
+    delete(surface_handle);
+    surface_handle=surf(X,Y,Z,'FaceColor','interp');
     
     view(3);
     mesh(XX,YY,T_ana(XX,YY),'FaceColor','none')
@@ -75,4 +75,4 @@ while(R>tol)
     % hold off
 end
 
-disp(['It took ',mat2str(iteration_counter),' iterations to reach an accuracy level of ',mat2str(tol),'.']);
+disp(['It took ',mat2str(iteration_counter),' iterations to reach an accuracy level of ',mat2str(tolerance),'.']);
