@@ -18,7 +18,7 @@ for i = 1-BC:N_x+BC
         x_node_coordinate=i*h_x;
         y_node_coordinate=j*h_y;
         
-        b(current_node)=b(current_node)+f(x_node_coordinate,y_node_coordinate);
+        b(current_node)= f(x_node_coordinate,y_node_coordinate);
     end
 end
 

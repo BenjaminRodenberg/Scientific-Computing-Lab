@@ -39,7 +39,7 @@ while(residual>tolerance)
         Z(i)=T(T_index);
     end
     
-    T_ana=@(x,y)sin(pi*x).*sin(pi*y); 
+    T_analytic=@(x,y)sin(pi*x).*sin(pi*y); 
     
     if(~BC)
         %Add homogeneous boundary values
@@ -59,7 +59,7 @@ while(residual>tolerance)
     surface_handle=surf(X,Y,Z,'FaceColor','interp');
     
     view(3);
-    mesh(XX,YY,T_ana(XX,YY),'FaceColor','none')
+    mesh(XX,YY,T_analytic(XX,YY),'FaceColor','none')
     xlabel('x')
     ylabel('y')
     

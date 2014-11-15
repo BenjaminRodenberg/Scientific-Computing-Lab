@@ -18,13 +18,13 @@ residual=0;
 
 for i = 1:N_x+2*BC
     for j = 1:N_y+2*BC
-        current_node_index=i+(N_x+2*BC)*(j-1);
+        current_node_index = i + (N_x + 2*BC) * (j-1);
         
         %decide weather node is next to boundary node
-        x_up=i<N_x+2*BC;
-        x_dwn=i>1;
-        y_up=j<N_y+2*BC;
-        y_dwn=j>1;
+        x_up = i<N_x + 2*BC;
+        x_dwn = i>1;
+        y_up = j<N_y + 2*BC;
+        y_dwn = j>1;
         
         mask=logical([y_dwn,x_dwn,1,x_up,y_up]);
         masked_index_vector=current_node_index+displacement_vector(mask);

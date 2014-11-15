@@ -11,15 +11,20 @@ h_y = length_y/(N_y+1);
 f=@(x,y)-2*pi^2*sin(pi*x).*sin(pi*y);
 %discrete load
 with_boundaries=0;
-b=assemble_load(N_x,N_y,f,with_boundaries);
+b=build_solution_vector(N_x,N_y,f,with_boundaries);
 
-L=assemble_laplacian(N_x,N_y);
-
+weights_matrix = build_weights_matrix(N_x,N_y);
 
 %solve System with MATLAB direct solver
-T=L\b;
+tic;
+T = weights_matrix \ b;
+toc;
 
-
+%Now with sparse matrix. Differences are visible with higher values of Ny
+%and Nx
+tic;
+T = sparse( weights_matrix ) \ b;
+toc;
 
 %corresponding grid
 [x,y]=meshgrid([h_x:h_x:length_x-h_x],[h_y:h_y:length_y-h_y]);
@@ -31,9 +36,9 @@ for i = 1:numel(x)
     Z(i)=T(T_index);
 end
 
-T_ana=@(x,y)sin(pi*x).*sin(pi*y);
+T_analytic=@(x,y)sin(pi*x).*sin(pi*y);
 %calculate Error
-E=error_norm(Z,T_ana(x,y))
+E=error_norm(Z,T_analytic(x,y))
 
 %Add homogeneous boundary values
 Z=[zeros(1,N_x+2);zeros(N_y,1),Z,zeros(N_y,1);zeros(1,N_x+2)];
@@ -45,7 +50,7 @@ figure(1)
 hold on
 title('solution of PDE')
 surf(X,Y,Z,'FaceColor','interp')
-mesh(XX,YY,T_ana(XX,YY),'FaceColor','none')
+mesh(XX,YY,T_analytic(XX,YY),'FaceColor','none')
 xlabel('x')
 ylabel('y')
 hold off
