@@ -1,4 +1,4 @@
-function [ weights_matrix,storage ] = build_weights_matrix( N_x,N_y )
+function [ weights_matrix ] = build_weights_matrix( N_x,N_y )
 %build_weights_matrix Assembles the discrete Laplacian Operator.
 %
 %                   - DIM1 and DIM2 denote the number of discrete CELLS,
@@ -9,7 +9,6 @@ function [ weights_matrix,storage ] = build_weights_matrix( N_x,N_y )
 
 length_x = 1;
 length_y = 1;
-storage = 0;
 
 h_x = length_x/(N_x+1);
 h_y = length_y/(N_y+1);

@@ -1,10 +1,6 @@
 clear all;
 close all;
-clc;
 
-% N_x=25;
-% N_y=25;
-% N=N_x*N_y;
 length_x = 1;
 length_y = 1;
 
@@ -27,12 +23,13 @@ index_gauss_seidl	= 3;
 method_name={'FullMatrix','SparseMatrix','GaussSeidl'};
 
 %Removed last grid size for testing purposes, as Gauss-Seidel takes forever
-N_x = [7 15 31]; % 63];
-N_y = [7 15 31]; % 63];
+N_x = [7 15 31]; % 63, 127];
+N_y = [7 15 31]; % 63, 127];
 number_of_grid_sizes = numel(N_x);
 fig_id =1;
+storage = 0;
 
-for method_id = 1:index_gauss_seidl 
+for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
     for current_grid_size = 1:number_of_grid_sizes
         current_N_x = N_x(current_grid_size);
         current_N_y = N_y(current_grid_size);
@@ -42,32 +39,33 @@ for method_id = 1:index_gauss_seidl
         switch method_id
             case index_full_matrix
                 tic;
-                [weights_matrix, storage] = build_weights_matrix(current_N_x,current_N_y);
+                weights_matrix = build_weights_matrix(current_N_x,current_N_y);
                 disp(['calculating T for N= ' mat2str(current_N_x) ', method: ' method_name{method_id}]);
                 T = weights_matrix \ b;
                 runtime = toc;
+                storage = numel(weights_matrix) + numel(T) + numel(b);
                 disp('done!');
-                storage = 0;
             case index_sparse_matrix
                 tic;
-                [sparse_weights_matrix, storage] = build_sparse_weights_matrix(current_N_x,current_N_y);
+                sparse_weights_matrix = build_sparse_weights_matrix(current_N_x,current_N_y);
                 disp(['calculating T for N= ' mat2str(current_N_x) ', method: ' method_name{method_id}]);
                 T = sparse_weights_matrix \ b;
                 runtime = toc;
+                storage = 0;%nzn(sparse_weights_matrix) + numel(T) + numel(b);
                 disp('done!');
-                storage = 0;
             case index_gauss_seidl
                 tic;
                 disp(['calculating T for N= ' mat2str(current_N_x) ', method: ' method_name{method_id}]);
-                [T, storage] = solve_gauss_seidl(current_N_x,current_N_y, b);
+                T = solve_gauss_seidl(current_N_x,current_N_y, b);
                 runtime = toc;
+                storage = numel(b) + numel(T); %+5 for crosshairs_stencil
                 disp('done!');
-                storage = 0;
             otherwise 
                 disp('No solution method specified for this method_id');
                 break
         end   
         
+
         
         %visualize results
 
@@ -114,21 +112,30 @@ for method_id = 1:index_gauss_seidl
         fig_id = fig_id + 1;
             
         
-        %calculate Error
-%       E=error_norm(Z,T_analytic(x,y))
 
     
-    
-    
-        solutions.(method_name{method_id}).N_x=current_N_x;
-        solutions.(method_name{method_id}).N_y=current_N_y;
-        %solutions.(method_name{method_id}).N_x.T_vector = T;
-    %     solutions.(method_name{method_id}).N_x.runtime = runtime;
-    %     solutions.(method_name{method_id}).N_x.storage = storage;
-    %     solutions.(method_name{method_id}).N_x.error = E;
+                 %calculate Error
+        %E=error_norm(Z,T_analytic(x,y))
+%         numel(Z)
+%         numel(T_analytic(x,y))
+%         
+%         solutions.(method_name{method_id}).N_x=current_N_x;
+%         solutions.(method_name{method_id}).N_y=current_N_y;
+%         solutions.(method_name{method_id}).N_x.runtime = runtime;
+%         solutions.(method_name{method_id}).N_x.storage = storage;
+       %solutions.(method_name{method_id}).N_x.error = E;
+
         
     end
     
+    
+    %To do:
+%     -Calculate the error norm for all methods
+%     -Printing of results into tabulars
+%     -Maybe find a way to allocate/build sparse matrix
+%     -Get storage requirement for sparse matrix
+%     -Structure code into subsections a)...f)
+%     -rearrange figures into subplots
 
 
 end
