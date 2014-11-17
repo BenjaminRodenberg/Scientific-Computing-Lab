@@ -1,0 +1,46 @@
+N_x=15;
+N_y=15;
+N=N_x*N_y;
+length_x = 1;
+length_y = 1;
+
+h_x = length_x/(N_x+1);
+h_y = length_y/(N_y+1);
+
+L=assemble_laplacian(N_x,N_y);
+b=assemble_load(N_x,N_y);
+
+%solve System with MATLAB direct solver
+T=L\b;
+%corresponding grid
+[x,y]=meshgrid([h_x:h_x:length_x-h_x],[h_x:h_y:length_y-h_x]);
+
+%convert solution from vector to matrix
+Z=zeros(N_x,N_y);
+Z=Z';
+Z(:)=T(:);
+%Transpose matrix in oder to match to grid: MATLAB is indexing matrices
+%column-wise, the grid is generated line-wise
+Z=Z';
+
+%Add homogeneous boundary values
+Z=[zeros(1,N_x+2);zeros(N_y,1),Z,zeros(N_y,1);zeros(1,N_x+2)];
+%Create grid for plo
+[X,Y]=meshgrid([0:h_x:length_x],[0:h_y:length_y]);
+
+figure(1)
+hold on
+title('solution of PDE')
+surf(X,Y,Z)
+xlabel('x')
+ylabel('y')
+shading interp
+hold off
+
+figure(2)
+hold on
+title('solution of PDE')
+contour(X,Y,Z)
+xlabel('x')
+ylabel('y')
+hold off

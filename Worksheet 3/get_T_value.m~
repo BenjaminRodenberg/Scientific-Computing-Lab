@@ -1,0 +1,9 @@
+function [ index ] = get_T_value( x,y,h_x,h_y )
+%GET_T_VALUE Summary of this function goes here
+%   Detailed explanation goes here
+
+index = [i_y+i_x]
+
+
+end
+

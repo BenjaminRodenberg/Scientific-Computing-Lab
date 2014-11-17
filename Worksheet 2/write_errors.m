@@ -3,10 +3,10 @@ function [  ] = write_errors( sols,method_name )
 %into command window.
 
 %get data from stuct
-tau_range = sols.tau;
-errors = sols.errors;
-error_reduction = sols.error_reduction;
-computation_time = sols.computation_time;
+tau_range=sols.tau;
+errors=sols.errors;
+error_reduction=sols.error_reduction;
+computation_time=sols.computation_time;
 
 fprintf('%s:\n',method_name)
 fprintf('------------------------------------------------------------------------------------------------------------\n')
