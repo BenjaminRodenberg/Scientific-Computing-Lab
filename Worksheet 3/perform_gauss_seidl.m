@@ -1,6 +1,4 @@
-function [ T, storage ] = solve_gauss_seidl(N_x,N_y, b)
-
-
+function [ T, storage ] = perform_gauss_seidl(N_x,N_y, b)
 %close all;
 
 tolerance=10^-4;
@@ -26,6 +24,7 @@ b=build_solution_vector(N_x,N_y,f,with_boundaries);
 
 while(residual>tolerance)
     T=do_one_Gauss_Seidl_Iteration(N_x,N_y,b,T,with_boundaries);
-    residual=calculate_residual(N_x,N_y,b,T,with_boundaries);
-   
+    residual=calculate_residual(N_x,N_y,b,T,with_boundaries);    
+end
+
 end
