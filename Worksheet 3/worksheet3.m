@@ -85,3 +85,6 @@ for method_id = [index_full_matrix, index_sparse_matrix]
 %     -Structure code into subsections a)...f)
 
 end
+
+print_requirements( method_name, N_x, solutions )
+
