@@ -6,8 +6,9 @@ index_full_matrix   = 1;
 index_sparse_matrix	= 2;
 index_gauss_seidl	= 3;
 
-for method_id = [index_full_matrix, index_sparse_matrix]
-    fprintf('%s:\n',(method_name{method_id}))
+for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
+    fprintf('------------------------------------------------------------------------------------------------------------\n')
+    fprintf('%s',(method_name{method_id}))
     
     for i=1:numel(N_x)
         current_N_x = N_x(i);
@@ -20,10 +21,9 @@ for method_id = [index_full_matrix, index_sparse_matrix]
     Nx_15 = requirements(:,2);
     Nx_31 = requirements(:,1);
     Nx_63 = requirements(:,2);
-    result = table(Nx_7, Nx_15,Nx_31, Nx_63,...
-    'RowNames',Properties);
-    
-    result    
+    Requirements = table(Nx_7, Nx_15,Nx_31, Nx_63,...
+    'RowNames',Properties)
+    fprintf('------------------------------------------------------------------------------------------------------------\n')
 end
 
 end

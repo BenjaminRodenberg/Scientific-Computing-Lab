@@ -1,11 +1,5 @@
 function [ weights_matrix ] = build_weights_matrix( N_x,N_y )
-%build_weights_matrix Assembles the discrete Laplacian Operator.
-%
-%                   - DIM1 and DIM2 denote the number of discrete CELLS,
-%                   - n1 and n2 denote the number of NODES inside the
-%                     domain .
-%                     especially NO boundary nodes! 
-%                   - h the meshwidth
+%build_weights_matrix Creates a weights matrix from discrete grid sizes N_x and N_y.
 
 length_x = 1;
 length_y = 1;

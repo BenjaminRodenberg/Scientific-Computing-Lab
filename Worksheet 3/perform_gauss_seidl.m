@@ -23,6 +23,8 @@ f=@(x,y)-2*pi^2*sin(pi*x).*sin(pi*y);
 b=build_solution_vector(N_x,N_y,f,with_boundaries);
 
 while(residual>tolerance)
+    %c) Implement a Gauss-Seidel solver for the system in a) as a function 
+    %of the right hand side b, Nx, and Ny
     T=do_one_Gauss_Seidl_Iteration(N_x,N_y,b,T,with_boundaries);
     residual=calculate_residual(N_x,N_y,b,T,with_boundaries);    
 end
