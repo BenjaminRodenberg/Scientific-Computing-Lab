@@ -32,7 +32,8 @@ for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
         current_N_x = N_x(current_grid_index);
         current_N_y = N_y(current_grid_index);
         %b) Implement a function creating the matrix from a) as a function of Nx
-        %and Ny
+        %and Ny. For Matrix A see functions BUILD_WEIGHTS_MATRIX (called in
+        %SOLVE_WITH_FULL_MATRIX)
         b=build_solution_vector(current_N_x,current_N_y,f,with_boundaries);
         h_x = length_x/(current_N_x+1);
         h_y = length_y/(current_N_y+1);
@@ -92,7 +93,7 @@ for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
 %     -Structure code into subsections a)...f)
 
 end
-
+%%
 %f) Compare the runtimes and the storage requirements (measured by the number of
 % entries of the arrays and/or vectors needed) 
 print_requirements( method_name, N_x, solutions )
