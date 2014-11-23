@@ -28,9 +28,12 @@ storage = 0;
 
 for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
     hold on
+    previous_N_x = 0;        
+    
     for current_grid_index = 1:number_of_grid_sizes
         current_N_x = N_x(current_grid_index);
-        current_N_y = N_y(current_grid_index);
+        current_N_y = N_y(current_grid_index);        
+        
         %b) Implement a function creating the matrix from a) as a function of Nx
         %and Ny. For Matrix A see functions BUILD_WEIGHTS_MATRIX (called in
         %SOLVE_WITH_FULL_MATRIX)
@@ -66,11 +69,23 @@ for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
             Z(i)=T(T_index);
         end        
         
-        %calculate Error
-        E=error_norm(Z,T_analytic(x,y));        
         solutions.(method_name{method_id}).(['N_x' num2str(current_N_x)]).runtime = runtime ;
         solutions.(method_name{method_id}).(['N_x' num2str(current_N_x)]).storage = storage;
-        solutions.(method_name{method_id}).(['N_x' num2str(current_N_x)]).error = E;
+            
+        %calculate Error                
+        if method_id == index_gauss_seidl
+            E=error_norm(Z,T_analytic(x,y));        
+            solutions.(method_name{method_id}).(['N_x' num2str(current_N_x)]).error = E;
+            
+            if previous_N_x
+                previous_error = solutions.(method_name{method_id}).(['N_x' num2str(previous_N_x)]).error;
+                solutions.(method_name{method_id}).(['N_x' num2str(current_N_x)]).error_reduction = previous_error/E;
+            else
+                solutions.(method_name{method_id}).(['N_x' num2str(current_N_x)]).error_reduction = 0;                
+            end            
+            
+            previous_N_x = current_N_x;
+        end                
         
         %Create grid for plotting
         [X_grid,Y_grid]=meshgrid(0:h_x:length_x,0:h_y:length_y);
@@ -88,13 +103,12 @@ for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
     hold off 
     fig_id = fig_id + 1;
     
-    %To do:
-%     -Maybe find a way to allocate/build sparse matrix
-%     -Structure code into subsections a)...f)
-
 end
 %%
 %f) Compare the runtimes and the storage requirements (measured by the number of
 % entries of the arrays and/or vectors needed) 
 print_requirements( method_name, N_x, solutions )
 
+%g) Compute the solutions for Nx = Ny = 7; 15; 31; 63; 127 with the 
+%Gauss-Seidel solver
+print_error_and_reduction( method_name{index_gauss_seidl}, N_x, solutions )

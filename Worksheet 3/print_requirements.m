@@ -21,8 +21,7 @@ for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
     Nx_15 = requirements(:,2);
     Nx_31 = requirements(:,3);
     Nx_63 = requirements(:,4);
-    Requirements = table(Nx_7, Nx_15,Nx_31, Nx_63,...
-    'RowNames',Properties)
+    Requirements = table(Nx_7, Nx_15,Nx_31, Nx_63,'RowNames',Properties)
     fprintf('------------------------------------------------------------------------------------------------------------\n')
 end
 
