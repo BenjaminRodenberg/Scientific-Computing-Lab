@@ -10,7 +10,7 @@ for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
     fprintf('------------------------------------------------------------------------------------------------------------\n')
     fprintf('%s',(method_name{method_id}))
     
-    for i=1:numel(N_x)
+    for i=1:numel(N_x)-1
         current_N_x = N_x(i);
         Properties = {'Runtime';'Storage'};    
         requirements(:, i) = [solutions.(method_name{method_id}).(['N_x' num2str(current_N_x)]).runtime...

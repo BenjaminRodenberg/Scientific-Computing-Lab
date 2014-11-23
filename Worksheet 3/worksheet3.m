@@ -20,8 +20,8 @@ index_gauss_seidl	= 3;
 method_name={'FullMatrix','SparseMatrix','GaussSeidl'};
 
 %Removed last grid size for testing purposes, as Gauss-Seidel takes forever
-N_x = [7 15 31 63]; %127];
-N_y = [7 15 31 63]; %127];
+N_x = [7 15 31 63 127];
+N_y = [7 15 31 63 127];
 number_of_grid_sizes = numel(N_x);
 fig_id =1;
 storage = 0;
@@ -32,7 +32,11 @@ for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
     
     for current_grid_index = 1:number_of_grid_sizes
         current_N_x = N_x(current_grid_index);
-        current_N_y = N_y(current_grid_index);        
+        current_N_y = N_y(current_grid_index);     
+        
+        if current_N_x > 63 && method_id ~= index_gauss_seidl
+            continue;
+        end
         
         %b) Implement a function creating the matrix from a) as a function of Nx
         %and Ny. For Matrix A see functions BUILD_WEIGHTS_MATRIX (called in
@@ -85,7 +89,7 @@ for method_id = [index_full_matrix, index_sparse_matrix, index_gauss_seidl]
             end            
             
             previous_N_x = current_N_x;
-        end                
+        end                                
         
         %Create grid for plotting
         [X_grid,Y_grid]=meshgrid(0:h_x:length_x,0:h_y:length_y);

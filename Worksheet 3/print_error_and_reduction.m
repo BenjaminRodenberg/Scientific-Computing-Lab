@@ -14,8 +14,8 @@ end
     Nx_15 = Errors(:,2);
     Nx_31 = Errors(:,3);  
     Nx_63 = Errors(:,4);
-    %Nx_127 = Errors(:,5);
-    Error = table(Nx_7, Nx_15, Nx_31, Nx_63,... %Nx_127,...
+    Nx_127 = Errors(:,5);
+    Error = table(Nx_7, Nx_15, Nx_31, Nx_63,Nx_127,...
     'RowNames',Properties)
     fprintf('------------------------------------------------------------------------------------------------------------\n')
 end
