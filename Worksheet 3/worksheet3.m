@@ -1,5 +1,5 @@
-clear all;
-close all;
+% clear all;
+% close all;
 
 length_x = 1;
 length_y = 1;
