@@ -16,7 +16,7 @@ solutions = struct();
 index_full_matrix   = 1;
 index_sparse_matrix	= 2;
 index_gauss_seidl	= 3;
-
+ 
 method_name={'FullMatrix','SparseMatrix','GaussSeidl'};
 
 %Removed last grid size for testing purposes, as Gauss-Seidel takes forever
