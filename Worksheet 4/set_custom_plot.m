@@ -1,6 +1,7 @@
-function [] = set_custom_plot( vector_N_x, vector_tau, interesting_time, subplot_id )
+function [] = set_custom_plot( vector_N_x, vector_tau, interesting_time )
 %SET_CUSTOM_PLOT 
 
+subplot_id=1;
 FONTSIZE=12;
 for j = 1:numel(interesting_time)
     figure(j)
@@ -47,6 +48,45 @@ for i = 1:numel(vector_N_x)
     end
 end
 
+subplot_id=1;
+figure(5)
+set(gcf,'Position',[100 100 1000 450]);
+subplot(numel(vector_N_x)+1,numel(interesting_time)+1,subplot_id)
+hold on
+set(gcf,'Color','white');
+text(0.1,0,'$\tau = \frac{1}{64}$','interpreter','latex','Fontsize',FONTSIZE);
+set(gca,'Color','white');
+set(gca,'XColor','white');
+set(gca,'YColor','white');
+hold off
+
+subplot_id = 1;
+for i = 1:numel(interesting_time)
+    subplot_id = subplot_id +1;
+    figure(5)
+    subplot(numel(vector_N_x)+1,numel(interesting_time)+1,subplot_id)
+    hold on
+    set(gcf,'Color','white');
+    text(0.2,0,['$t= ' rats(interesting_time(i)) '$'],'interpreter','latex','Fontsize',FONTSIZE);        
+    set(gca,'Color','white');
+    set(gca,'XColor','white');
+    set(gca,'YColor','white');
+    hold off    
+end
+
+subplot_id = 1;
+for i = 1:numel(vector_N_x)
+    subplot_id=subplot_id+1+numel(interesting_time);    
+    figure(5)
+    subplot(numel(vector_N_x)+1,numel(interesting_time)+1,subplot_id)
+    hold on
+    set(gcf,'Color','white');
+    text(0.1,0.5,['$N_x = ',mat2str(vector_N_x(i)),'$'],'interpreter','latex','Fontsize',FONTSIZE);
+    set(gca,'Color','white');
+    set(gca,'XColor','white');
+    set(gca,'YColor','white');
+    hold off    
+end
 
 end
 

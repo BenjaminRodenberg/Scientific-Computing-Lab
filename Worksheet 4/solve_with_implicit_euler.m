@@ -40,8 +40,7 @@ for t_current=0:tau:TIME_FINAL-tau
     T = initial_guess;
     tic;
     while (residual > tolerance)
-        [T, residual] = do_one_implicit_euler_step( N_x,N_y,tau,T, T_old );
-        residual;
+        [T, residual] = do_one_implicit_euler_step( N_x,N_y,tau,T, T_old );       
     end
     time = toc;
     %disp(['Time at tau=', mat2str(tau), ': ' mat2str(time)]);  
