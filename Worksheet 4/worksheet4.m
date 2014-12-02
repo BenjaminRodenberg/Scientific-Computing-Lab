@@ -18,51 +18,8 @@ vector_N_x=[3 7 15 31];
 interesting_time=[1/8,2/8,3/8,4/8];
 
 subplot_id=1;
-FONTSIZE=12;
-for j = 1:numel(interesting_time)
-    figure(j)
-    set(gcf,'Position',[100 100 1100 500]);
-    subplot(numel(vector_N_x)+1,numel(vector_tau)+1,subplot_id)
-    hold on
-    set(gcf,'Color','white');
-    text(0.1,0,['$t = ',mat2str(interesting_time(j)),'$'],'interpreter','latex','Fontsize',FONTSIZE);
-    set(gca,'Color','white');
-    set(gca,'XColor','white');
-    set(gca,'YColor','white');
-    hold off
-end
 
-subplot_id = 1;
-for i = 1:numel(vector_tau)
-    subplot_id = subplot_id +1;
-    for j = 1:numel(interesting_time)
-        figure(j)
-        subplot(numel(vector_N_x)+1,numel(vector_tau)+1,subplot_id)
-        hold on
-        set(gcf,'Color','white');
-        text(0.2,0,['$\tau = \frac{1}{',mat2str(1./vector_tau(i)),'}$'],'interpreter','latex','Fontsize',FONTSIZE);
-        set(gca,'Color','white');
-        set(gca,'XColor','white');
-        set(gca,'YColor','white');
-        hold off
-    end
-end
-
-subplot_id=1;
-for i = 1:numel(vector_N_x)
-    subplot_id=subplot_id+1+numel(vector_tau);
-    for j = 1:numel(interesting_time)
-        figure(j)
-        subplot(numel(vector_N_x)+1,numel(vector_tau)+1,subplot_id)
-        hold on
-        set(gcf,'Color','white');
-        text(0.1,0.5,['$N_x = ',mat2str(vector_N_x(i)),'$'],'interpreter','latex','Fontsize',FONTSIZE);
-        set(gca,'Color','white');
-        set(gca,'XColor','white');
-        set(gca,'YColor','white');
-        hold off
-    end
-end
+set_custom_plot(vector_N_x, vector_tau, interesting_time, subplot_id);
 
 subplot_id=length(vector_tau)+2;
 %choose gridsize
@@ -84,8 +41,7 @@ for N_x=vector_N_x
             Y(i,j)=y_ij(i,j);
         end
     end
-    for tau=vector_tau
-        
+    for tau=vector_tau        
         subplot_id=subplot_id+1;
         
         % solve heat equation explicitly for given grid and timestep size
@@ -93,8 +49,7 @@ for N_x=vector_N_x
         
 %         % solve heat equation implicitly for given grid and timestep size
 %         [T,t]=solve_with_implicit_euler(N_x,N_y,tau);
-        
-        
+                        
         for i=1:numel(interesting_time)
             figure(i)
             if mod(subplot_id-1,length(vector_tau)+1)==0
@@ -102,11 +57,17 @@ for N_x=vector_N_x
             end
             subplot(length(vector_N_x)+1,length(vector_tau)+1,subplot_id)
             hold on
-            axis([0 1 0 1 0 1])
-            %             warning('better contour or surf?');
+            axis([0 1 0 1 0 1])            
             surf(X,Y,T(:,:,interesting_time(i)/tau+1));
             view(3);
             hold off
         end
     end
 end
+
+for i=1:numel(interesting_time) %1. 1/8, 2. 2/8, 3. 3/8, 4. 4/8 
+    figure_handle = figure(i);
+    hgexport(gcf, ['ExplicitEulerForTime' num2str(i) '.jpg'],...
+             hgexport('factorystyle'), 'Format', 'jpeg');    
+end
+
