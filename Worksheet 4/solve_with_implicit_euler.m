@@ -24,7 +24,7 @@ for i = 2:N_x+1
 end
 
 
-tolerance = 1e-2;
+tolerance = 1e-6;
 
 %--------------------------------------------------------------------------
 %time loop
@@ -36,15 +36,15 @@ for t_current=0:tau:TIME_FINAL-tau
     %update rhs of ODE
     residual = inf;
     T_old = T;
-    initial_guess = zeros(size(T));
+    initial_guess = T;
     T = initial_guess;
     tic;
     while (residual > tolerance)
         [T, residual] = do_one_implicit_euler_step( N_x,N_y,tau,T, T_old );
-        residual
+        residual;
     end
     time = toc;
-    disp(['Time at tau=', mat2str(tau), ': ' mat2str(time)]);  
+    %disp(['Time at tau=', mat2str(tau), ': ' mat2str(time)]);  
 
     %save final data
     T_history(:,:,TIME_FINAL/tau+1)=T;

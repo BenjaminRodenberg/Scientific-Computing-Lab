@@ -14,10 +14,10 @@ global_factor = 1/(prod_h_xy_pow2+2*tau*(h_x_pow2+h_y_pow2));
 
 for i = 2:N_x+1
     for j = 2:N_y+1
-        T_new(i,j)=T_old(i,j)*prod_h_xy_pow2+tau*(h_y_pow2*(T_new(i-1,j)+T_new(i+1,j))+h_x_pow2*(T_new(i,j-1)+T_new(i,j+1)));
+        T_new(i,j)=global_factor*(T_old(i,j)*prod_h_xy_pow2+tau*(h_y_pow2*(T_new(i-1,j)+T_new(i+1,j))+h_x_pow2*(T_new(i,j-1)+T_new(i,j+1))));
     end
 end
-T_new=global_factor*T_new;
+% T_new=global_factor*T_new;
 
 %Residual
 residual = 0;
