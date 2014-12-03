@@ -55,7 +55,8 @@ for N_x=vector_N_x
                 subplot_id_implicit = subplot_id_implicit+1;              
                 subplot(length(vector_N_x)+1,length(interesting_time)+1,subplot_id_implicit);
                 hold on
-                axis([0 1 0 1 0 1])            
+                xlim([0 1]);
+                ylim([0 1]);                
                 surf(X,Y,T_implicit(:,:,interesting_time(i)/vector_tau(1)+1));
                 view(3);
                 hold off
@@ -70,7 +71,8 @@ for N_x=vector_N_x
             end
             subplot(length(vector_N_x)+1,length(vector_tau)+1,subplot_id)
             hold on
-            axis([0 1 0 1 0 1])            
+            xlim([0 1]);
+            ylim([0 1]);
             surf(X,Y,T(:,:,interesting_time(i)/tau+1));
             view(3);
             hold off
