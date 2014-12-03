@@ -1,0 +1,201 @@
+\documentclass[12pt,a4paper]{scrreprt}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{pgfplots}
+\usepackage{grffile}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{trfsigns}
+\usepackage{wrapfig}
+\renewcommand{\footnote}[1]{}
+\pgfplotsset{compat=newest}
+\usetikzlibrary{plotmarks}
+\usepackage{amsmath}
+\author{Benjamin Rüth}
+\begin{document}
+\section*{Limit of PDE}
+The ODE has the following form:
+\begin{equation*}
+T_t=T_{xx}+T_{yy}\, \text{for}\, \left(x,y\right)\in\Omega=\left[0,1\right]^2
+\end{equation*}
+with
+\begin{equation*}
+T\left(x,y,t\right)=0\, \text{on}\, \partial\Omega
+\end{equation*}
+We use separation of variables and thus the following approach:
+\begin{equation*}
+T\left(x,y,t\right)=f\left(t\right)g\left(x,y\right)
+\end{equation*}
+Inserting into the PDE
+\begin{equation*}
+f\left(t\right)_t g\left(x,y\right) =f\left(t\right) \left(g\left(x,y\right)_{xx}+g\left(x,y\right)_{yy}\right)
+\end{equation*}
+Division by $f,g$
+\begin{equation*}
+\frac{f\left(t\right)_t}{f\left(t\right)}=\frac{g\left(x,y\right)_{xx}+g\left(x,y\right)_{yy}}{ g\left(x,y\right)}=-C
+\end{equation*}
+We obtain two ODEs. For the limit $t\rightarrow \infty$ we are only interested in one of them:
+\begin{equation*}
+-C=\frac{f\left(t\right)_t}{f\left(t\right)} \leftrightarrow f\left(t\right)_t=-C f\left(t\right) 
+\end{equation*}
+The solution for this ODE is
+\begin{equation*}
+f\left(t\right)=e^{-C t}\overset{t\rightarrow\infty}{\rightarrow}0
+\end{equation*}
+With $f$ approaching $0$ also the product $T=f\,g$ approaches $0$. $C$ has to be a positive number in order to be able to solve the second ODE
+\begin{equation*}
+g\left(x,y\right)_{xx}+g\left(x,y\right)_{yy}=-C g\left(x,y\right)
+\end{equation*}
+which has to match the BCs. In order to satisfy the BCs $g\left(x,y\right)$ has to have the following form (Fourierseries):
+\begin{equation*}
+g \left( x,y \right)=
+  \left( \sum\limits_{k=0}^\infty a_k \sin\left(\frac{kx}{2\pi}\right) \right) 
+  \left( \sum\limits_{k=0}^\infty b_k \sin\left(\frac{ky}{2\pi}\right) \right)  
+\overset{\text{some Fourierseries}}{=}
+\sum\limits_{k=0}^\infty \sum\limits_{l=0}^\infty A_{k,l} \sin\left(\frac{kx}{2\pi}\right)\sin\left(\frac{my}{2\pi}\right)
+\end{equation*}
+Finally we get
+\begin{equation*}
+\lim_{t\rightarrow\infty}T\left(x,y,t\right)=0
+\end{equation*}
+
+
+
+
+
+
+\section*{Solve PDE with numeric scheme}
+\begin{equation*}
+T_t=T_{xx}
+\end{equation*}
+Implicit scheme has the following form
+\begin{equation*}
+T^{n+1}=T^{n}+\tau\,\text{RHS}\left(T^{n+1}\right)=T^{n}+\tau\,\Delta T^{n+1}
+\end{equation*}
+Discretize $\Delta$ using finite differences with $\Delta_h$
+\begin{equation*}
+\Delta_h T^{n+1}_{i,j}=\frac{1}{h_x^2 h_y^2}
+\left[
+-2\left(h_x^2+h_y^2\right)T_{i,j}^{n+1}
++h_y^2\left(T_{i-1,j}^{n+1}+T_{i+1,j}^{n+1}\right)
++h_x^2\left(T_{i,j-1}^{n+1}+T_{i,j+1}^{n+1}\right)
+\right]
+\end{equation*}
+We discretize the domain using $N_{\partial\Omega}=(N_x+2)(N_y+2)$ nodes. This gives the meshsize $h_x=\frac{L_x}{N_x+1}$ and $h_y=\frac{L_y}{N_y+1}$. The node coordinates are $\left(x_{i,j},y_{i,j}\right)=\left(i h_x,j h_y\right)$. Nodes with $i=0,N_x+1$ or $j=0,N_y+1$ are boundary nodes. Inner nodes are nodes with $i=1...N_x$ and $j=1...N_y$. We have $N=N_x N_y$ inner nodes.
+This yields the implicit scheme discretized in space
+\begin{equation*}
+T^{n+1}_{i,j}=T^{n}_{i,j}+\tau\,\Delta_h T^{n+1}_{i,j}\ \forall i=1...N_x\ j=1...N_y
+\end{equation*}
+Solving for $T_{i,j}^{n+1}$
+\begin{equation*}
+T_{i,j}^{n+1}=
+\frac
+{T_{i,j}^{n}\,h_x^2 h_y^2
++\tau\left[
+h_y^2\left(T_{i-1,j}^{n+1}+T_{i+1,j}^{n+1}\right)
++h_x^2\left(T_{i,j-1}^{n+1}+T_{i,j+1}^{n+1}\right)
+\right]
+}
+{
+h_x^2 h_y^2+2\tau\left(h_x^2+h_y^2\right)
+}\ \forall i=1...N_x\ j=1...N_y
+\end{equation*}
+This scheme is used for a Gauss Seidl Solver. For the Residual we use
+\begin{equation*}
+\text{RES}^{n+1}=\frac{1}{N}\sqrt{\sum_{i=1}^{N_x} \sum_{j=1}^{N_y}\left(T_{i,j}^{n+1}-\frac
+{T_{i,j}^{n}\,h_x^2 h_y^2
++\tau\left[
+h_y^2\left(T_{i-1,j}^{n+1}+T_{i+1,j}^{n+1}\right)
++h_x^2\left(T_{i,j-1}^{n+1}+T_{i,j+1}^{n+1}\right)
+\right]
+}
+{
+h_x^2 h_y^2+2\tau\left(h_x^2+h_y^2\right)
+}\right)^2}
+\end{equation*}
+\begin{footnotesize}
+\begin{equation*}
+\text{RES}^{n+1}=\frac{1}{N}\sqrt{\sum_{i=1}^{N_x} \sum_{j=1}^{N_y}
+\left(
+T_{i,j}^n+
+\tau
+\frac{1}{h_x^2 h_y^2}
+\left[
+-2\left(h_x^2+h_y^2\right)T_{i,j}^{n+1}
++h_y^2\left(T_{i-1,j}^{n+1}+T_{i+1,j}^{n+1}\right)
++h_x^2\left(T_{i,j-1}^{n+1}+T_{i,j+1}^{n+1}\right)
+\right]
+-T_{i,j}^{n+1}
+\right)^2}
+\end{equation*}
+\end{footnotesize}
+
+
+\section*{Questions}
+\begin{itemize}
+\item What relation between maximal time step size (to achieve a stable discretization) and spatial step $h_x = h_y$ can you derive from the tabular in b)?\newline
+{\footnotesize
+$\tau<\frac{h^2}{2}$ for explicit euler (see lecture Scientific Computing)
+}
+
+\item Would you consider it reasonable to use a higher order explicit time discretization in
+b)?\\
+\textbf{Hint}: Assume that all explicit discretizations have similiar restrictions with respect to time step size as seen above for the explicit Euler method and think about the effort
+you have to make to get a stable solution with balanced accuracy in time and space!!!\newline
+{\footnotesize
+The total error is $e=e_t+e_s$, where $e_t$ denotes the error resulting from the time discretization $e_t=O\left(\tau^1\right)=c_t \tau$ and $e_s$ denotes the error resulting from the space discretization $e_s=O\left(h^2\right)=c_s h^2$.\\
+In order to satisfy stability: \textbf{no}. Stability condition is still dependent on $\tau$. Higher order (\textbf{accuracy} order) explicit schemes do not fix unstable solution. This is done by implicit schemes.\\
+In order to increase accuracy: \textbf{not generally}. If we want to keep the error balanced, while guaranteeing stability, a higher order scheme does only make sense, if the constant $c_s$ of the $O\left(h^2\right)$--scheme is very low and the constant $c_t$ of the $O\left(\tau\right)$--scheme is very high ($c_s \ll c_t$), such that increasing the accuracy order in time balances the high constant factor (but for this reason the initial error $e=O(h^2)+O(\tau)$ will not be balanced!\\
+If both constants are of comparable size, only the error in time $e_t$ is reduced, but the error in space $e_s$ stays at the same level and is therefore dominant. The total error cannot get below the dominant part $e>e_s$, which stays at the same level in order to guarantee stability.
+}
+
+\item Is it reasonable to use an implicit Euler method in our example if we want to compute solutions with balanced accuracy in time and space for each $N_x , N_y$ ?\newline
+{\footnotesize
+In order to keep the error balanced, $e_s$ and $e_t$ should have the same order. This means if we are decreasing $\tau$ to $\tau'=\frac{1}{4}\tau$, we should also decrease $h$ to $h'=\frac{1}{2}h$.
+If the stability condition is satisfied for one parameter set $\tau,h$ ,using an implicit scheme does not make sense, since the stability criterion scales with the same ratio as the error. That means, if $\tau<\frac{h^2}{2}$ is satisfied, also $\tau'<\frac{h'^2}{2}$ will be satisfied, since 
+\begin{align*}
+\tau'<\frac{h'^2}{2} 									&\leftrightarrow\\
+\frac{1}{4}\tau<\frac{\left(\frac{1}{2}h\right)^2}{2}	&\leftrightarrow\\ \frac{1}{4}\tau<\frac{\frac{1}{4}h^2}{2} 				&\leftrightarrow\\ \tau<\frac{h^2}{2}&
+\end{align*}
+and it does not make sense to use an implicit scheme for any of the parameter sets with balanced error.
+
+If the stability condition is not satisfied for one parameter set $\tau,h$ which produces a balanced error ($c_s \gg c_t$), then of course we have to use an implicit scheme in order to avoid stability problems. Stability problems will never be fixed when using a balanced parameter set due to the reasoning from above.
+}
+
+\item Would you consider it reasonable to use a higher order implicit time discretization (again from the point of view of balanced accuracy in time and space)?\newline
+\textbf{Hint}: Assume that all implicit discretizations have similar stability properties as the implicit Euler method.\\
+{\footnotesize
+With a higher order time integration scheme, we are able to make larger time steps while still keeping the error at the desired level: $$e=e_s+e_t=O\left(h^2\right)+O\left(\tau^{k>1}\right)$$
+We still have to satisfy the stability condition when using an explicit scheme. Due to the stability condition we cannot take any advantage of the higher order when using the explicit scheme  (second question), since the two schemes $\Delta_h$ and euler--scheme are a perfect matching pair (third question) when trying to balance the two errors.\\
+By using an implicit scheme we get rid of the stability constraint and use a higher order time discretization scheme with our second order space discretization scheme. We just have to adjust the grid resolution to the order of the time discretization scheme:
+\begin{align*}
+e
+&
+=e_t+e_s\ \text{balanced}
+\\
+e
+&
+=O\left(\tau\right)+O\left(h^2\right)\ \text{balanced for first order time discretization}
+\end{align*}
+Balanced means, that when quartering $\tau$ we have to half $h$ in order to quarter the error.
+\begin{align*}
+e
+&
+=O\left(\tau^2\right)+O\left(h^2\right)\ \text{unbalanced. We have to adjust}\ h
+\\
+h'
+&
+=\frac{h}{2}
+\\
+e
+&
+=O\left(\tau^2\right)+O\left(h'^2\right)\ \text{again balanced.}
+\end{align*}
+Here we have to half both $\tau$ and $h$ in order to quarter the error. That means we only need to invest half as many time steps as with a first order scheme in order to reach the same error. The stability criterion $1<\frac{h^2}{2\tau}$ can be violated if we half both $\tau$ and $h$ at the same time, since $\frac{h^2}{2\tau}>\frac{h^2}{4\tau}\overset{?}{>}1$. But we don't care about stability when using an implicit scheme! Thus --- depending on the order of the time discretization scheme --- we are allowed to increase the size of our timesteps while still staying at the same level of accuracy.
+}
+\end{itemize}
+
+\end{document}
